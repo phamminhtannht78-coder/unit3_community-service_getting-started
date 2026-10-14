@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếng Anh 7: Unit 3 - Community Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 50%, #a5d6a7 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Continuous falling snow animation */
+        .snowflake {
+            position: fixed;
+            top: -10px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fall linear infinite;
+            z-index: 1;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10px) translateX(0); }
+            100% { transform: translateY(105vh) translateX(30px); }
+        }
+
+        /* Fireworks canvas overlay */
+        #fireworks-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .card-shadow {
+            box-shadow: 0 12px 30px -5px rgba(27, 94, 32, 0.2), 0 8px 12px -6px rgba(27, 94, 32, 0.1);
+        }
+
+        @keyframes bounce-short {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .animate-bounce-short {
+            animation: bounce-short 1s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="flex flex-col justify-between text-gray-800 relative selection:bg-emerald-200">
+
+    <!-- Canvas for Fireworks Effects -->
+    <canvas id="fireworks-canvas"></canvas>
+
+    <!-- Snowflake Animation Container -->
+    <div id="snow-container" class="fixed inset-0 overflow-hidden pointer-events-none z-0"></div>
+
+    <!-- Header Navigation -->
+    <header class="w-full bg-emerald-800 text-white py-4 px-6 shadow-xl z-10 flex flex-wrap justify-between items-center sticky top-0 backdrop-blur-md bg-opacity-95 border-b border-emerald-600">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-2xl shadow-inner">
+                🌱
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-black tracking-tight text-white">Tiếng Anh 7: Global Success</h1>
+                <p class="text-xs text-emerald-200 font-medium hidden sm:block">Unit 3: Community Service — Getting Started</p>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+            <div id="mode-badge" class="bg-emerald-950/80 border border-emerald-500 px-3 py-1 rounded-full text-xs font-semibold text-emerald-200 shadow-sm">
+                Chế độ: Đọc & Nghe thoại
+            </div>
+            <div class="bg-amber-400 text-emerald-950 font-black px-4 py-1.5 rounded-full text-sm shadow-md flex items-center space-x-1">
+                <span>⭐ Điểm:</span>
+                <span id="score-display" class="text-lg">0</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="w-full max-w-4xl mx-auto px-4 mt-6 z-10 flex flex-wrap justify-center gap-2 sm:gap-4">
+        <button id="tab-dialogue" onclick="switchMode('dialogue')" class="px-4 py-2.5 rounded-2xl font-bold text-sm sm:text-base shadow-md transition transform active:scale-95 cursor-pointer bg-emerald-600 text-white border-2 border-emerald-500">
+            📖 Hội thoại Minh & Tom
+        </button>
+        <button id="tab-quiz" onclick="switchMode('quiz')" class="px-4 py-2.5 rounded-2xl font-bold text-sm sm:text-base shadow-md transition transform active:scale-95 cursor-pointer bg-white text-emerald-800 border-2 border-emerald-200 hover:bg-emerald-50">
+            ❓ Chế độ 1: Trắc nghiệm Đọc hiểu
+        </button>
+        <button id="tab-tf" onclick="switchMode('tf')" class="px-4 py-2.5 rounded-2xl font-bold text-sm sm:text-base shadow-md transition transform active:scale-95 cursor-pointer bg-white text-emerald-800 border-2 border-emerald-200 hover:bg-emerald-50">
+            ✔️ Chế độ 2: Đúng / Sai (True or False)
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <main class="flex-grow flex items-center justify-center p-4 my-2 z-10">
+        <div id="main-card" class="w-full max-w-4xl bg-white/95 backdrop-blur-md rounded-3xl card-shadow p-5 sm:p-8 transition-all duration-300 border border-emerald-100">
+
+            <!-- ================= VIEW 0: DIALOGUE & AUDIO ================= -->
+            <div id="dialogue-view" class="block">
+                <div class="text-center mb-6">
+                    <span class="text-xs font-bold uppercase tracking-widest text-emerald-600 bg-emerald-100 px-3 py-1 rounded-full">Unit 3: Community Service</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-emerald-900 mt-2">1. Listen and read 🎧</h2>
+                    <p class="text-sm text-gray-600 mt-1">Bấm vào nút loa 🔊 ở từng câu để nghe giọng đọc tiếng Anh chuẩn!</p>
+                </div>
+
+                <!-- Conversation Script -->
+                <div class="space-y-3 bg-emerald-50/60 p-4 sm:p-6 rounded-2xl border border-emerald-200 max-h-[420px] overflow-y-auto mb-6">
+                    
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">Hi, Tom. Are you back in Ha Noi?</span>
+                        </div>
+                        <button onclick="speakText('Hi, Tom. Are you back in Ha Noi?')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-emerald-100/70 p-3 rounded-xl shadow-sm border border-emerald-200">
+                        <div>
+                            <span class="font-black text-teal-800 mr-2">Tom:</span>
+                            <span class="text-gray-800 font-medium">Yes. I came back yesterday. Can we meet up this Sunday morning? I bought you a board game.</span>
+                        </div>
+                        <button onclick="speakText('Yes. I came back yesterday. Can we meet up this Sunday morning? I bought you a board game.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">Sure, I can't wait! But our Green School Club will have some community activities on that morning.</span>
+                        </div>
+                        <button onclick="speakText('Sure, I can\'t wait! But our Green School Club will have some community activities on that morning.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-emerald-100/70 p-3 rounded-xl shadow-sm border border-emerald-200">
+                        <div>
+                            <span class="font-black text-teal-800 mr-2">Tom:</span>
+                            <span class="text-gray-800 font-medium">What activities does your club do?</span>
+                        </div>
+                        <button onclick="speakText('What activities does your club do?')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">Well, we pick up litter around our school and plant vegetables in our school garden.</span>
+                        </div>
+                        <button onclick="speakText('Well, we pick up litter around our school and plant vegetables in our school garden.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-emerald-100/70 p-3 rounded-xl shadow-sm border border-emerald-200">
+                        <div>
+                            <span class="font-black text-teal-800 mr-2">Tom:</span>
+                            <span class="text-gray-800 font-medium">School gardening? That's fantastic!</span>
+                        </div>
+                        <button onclick="speakText('School gardening? That\'s fantastic!')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">Yes. We donate the vegetables to a nursing home. Does your school have any activities like these?</span>
+                        </div>
+                        <button onclick="speakText('Yes. We donate the vegetables to a nursing home. Does your school have any activities like these?')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-emerald-100/70 p-3 rounded-xl shadow-sm border border-emerald-200">
+                        <div>
+                            <span class="font-black text-teal-800 mr-2">Tom:</span>
+                            <span class="text-gray-800 font-medium">Yes. We donate books to homeless children. We also have English classes. Last summer, we taught English to 30 kids in the area.</span>
+                        </div>
+                        <button onclick="speakText('Yes. We donate books to homeless children. We also have English classes. Last summer, we taught English to 30 kids in the area.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">Sounds like great work!</span>
+                        </div>
+                        <button onclick="speakText('Sounds like great work!')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-emerald-100/70 p-3 rounded-xl shadow-sm border border-emerald-200">
+                        <div>
+                            <span class="font-black text-teal-800 mr-2">Tom:</span>
+                            <span class="text-gray-800 font-medium">Thanks.</span>
+                        </div>
+                        <button onclick="speakText('Thanks.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                    <div class="flex items-start justify-between bg-white p-3 rounded-xl shadow-sm border border-emerald-100">
+                        <div>
+                            <span class="font-black text-emerald-800 mr-2">Minh:</span>
+                            <span class="text-gray-800 font-medium">... So, let's meet in the afternoon then.</span>
+                        </div>
+                        <button onclick="speakText('So, let\'s meet in the afternoon then.')" class="bg-amber-300 hover:bg-amber-400 text-amber-950 p-1.5 rounded-full text-xs font-bold shadow ml-2 flex-shrink-0 cursor-pointer">🔊</button>
+                    </div>
+
+                </div>
+
+                <div class="text-center">
+                    <button onclick="switchMode('quiz')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-base px-8 py-3 rounded-full shadow-lg transition transform active:scale-95 cursor-pointer">
+                        Bắt đầu chơi Trắc nghiệm 🎮➡️
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- ================= VIEW 1: COMPREHENSION QUIZ ================= -->
+            <div id="quiz-game-view" class="hidden">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-md">
+                            Chế độ 1: Trắc nghiệm Đọc hiểu
+                        </span>
+                        <span class="text-xs font-bold text-gray-500 ml-2">Câu <span id="quiz-q-num">1</span>/5</span>
+                    </div>
+                </div>
+
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+                    <div id="quiz-progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+
+                <div id="quiz-card-content">
+                    <div class="bg-emerald-50/80 p-6 rounded-2xl border border-emerald-200 mb-6 text-center">
+                        <div id="quiz-icon" class="text-4xl mb-2">🌿</div>
+                        <h3 id="quiz-question-text" class="text-lg sm:text-xl font-black text-gray-800">
+                            Loading question...
+                        </h3>
+                    </div>
+
+                    <div id="quiz-options" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                        <!-- Populated by JS -->
+                    </div>
+
+                    <div id="quiz-feedback-box" class="hidden p-4 rounded-2xl mb-6 text-sm font-medium border"></div>
+
+                    <div class="flex justify-end">
+                        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-3 rounded-xl shadow-lg transition transform active:scale-95 cursor-pointer">
+                            Câu tiếp theo ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quiz Completion Screen -->
+                <div id="quiz-result-view" class="hidden text-center py-8">
+                    <div class="text-6xl mb-3 animate-bounce-short">🏆</div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-emerald-900 mb-2">Xuất sắc! Bạn đã hoàn thành Chế độ 1!</h3>
+                    <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl max-w-sm mx-auto mb-6 shadow-inner">
+                        <p class="text-gray-600 font-medium text-sm">Kết quả Trắc nghiệm Đọc hiểu:</p>
+                        <p class="text-4xl font-black text-emerald-600 my-1"><span id="quiz-final-score">0</span> / 5</p>
+                    </div>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="restartQuiz()" class="bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-bold px-6 py-3 rounded-full transition cursor-pointer">
+                            Làm lại Chế độ 1 🔄
+                        </button>
+                        <button onclick="switchMode('tf')" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-6 py-3 rounded-full shadow transition cursor-pointer">
+                            Sang Chế độ Đúng / Sai ➡️
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ================= VIEW 2: TRUE / FALSE CHALLENGE ================= -->
+            <div id="tf-game-view" class="hidden">
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100 px-3 py-1 rounded-md">
+                            Chế độ 2: Đúng / Sai (True or False)
+                        </span>
+                        <span class="text-xs font-bold text-gray-500 ml-2">Câu <span id="tf-q-num">1</span>/5</span>
+                    </div>
+                </div>
+
+                <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6 overflow-hidden">
+                    <div id="tf-progress-bar" class="bg-emerald-600 h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+                </div>
+
+                <div id="tf-card-content">
+                    <div class="bg-emerald-50/80 p-6 rounded-2xl border border-emerald-200 mb-6 text-center">
+                        <div id="tf-icon" class="text-4xl mb-2">📝</div>
+                        <p class="text-xs font-extrabold text-emerald-700 uppercase tracking-wide mb-1">Hãy nhận định câu sau đúng hay sai theo bài đọc:</p>
+                        <h3 id="tf-statement-text" class="text-lg sm:text-xl font-black text-gray-800">
+                            Loading statement...
+                        </h3>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <button onclick="selectTF(true, this)" class="tf-btn bg-emerald-500 hover:bg-emerald-600 text-white font-black text-xl py-4 px-6 rounded-2xl shadow-lg transition transform active:scale-95 cursor-pointer">
+                            ✔️ TRUE (Đúng)
+                        </button>
+                        <button onclick="selectTF(false, this)" class="tf-btn bg-rose-500 hover:bg-rose-600 text-white font-black text-xl py-4 px-6 rounded-2xl shadow-lg transition transform active:scale-95 cursor-pointer">
+                            ❌ FALSE (Sai)
+                        </button>
+                    </div>
+
+                    <div id="tf-feedback-box" class="hidden p-4 rounded-2xl mb-6 text-sm font-medium border"></div>
+
+                    <div class="flex justify-end">
+                        <button id="tf-next-btn" onclick="nextTFQuestion()" class="hidden bg-emerald-600 hover:bg-emerald-700 text-white font-black px-6 py-3 rounded-xl shadow-lg transition transform active:scale-95 cursor-pointer">
+                            Câu tiếp theo ➡️
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TF Completion Screen -->
+                <div id="tf-result-view" class="hidden text-center py-8">
+                    <div class="text-6xl mb-3 animate-bounce-short">🌟</div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-emerald-900 mb-2">Chúc mừng bạn đã hoàn thành tất cả thử thách!</h3>
+                    <div class="bg-emerald-50 border border-emerald-200 p-6 rounded-2xl max-w-sm mx-auto mb-6 shadow-inner">
+                        <p class="text-gray-600 font-medium text-sm">Kết quả Thử thách Đúng / Sai:</p>
+                        <p class="text-4xl font-black text-emerald-600 my-1"><span id="tf-final-score">0</span> / 5</p>
+                    </div>
+                    <button onclick="restartTF()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold px-8 py-3 rounded-full shadow-lg transition transform active:scale-95 cursor-pointer">
+                        Làm lại Chế độ Đúng / Sai 🔄
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-4 text-xs text-emerald-900 bg-emerald-100/80 font-semibold z-10 border-t border-emerald-200">
+        Game Tương Tác Tiếng Anh 7 • Unit 3: Community Service ❄️🌱
+    </footer>
+
+    <!-- JavaScript Game Logic -->
+    <script>
+        /* ================= 100% ACCURATE DATA FROM TEXTBOOK ================= */
+        const quizData = [
+            {
+                id: 1,
+                icon: "🗓️",
+                question: "When will the Green School Club have community activities?",
+                options: [
+                    { label: "This Sunday morning", correct: true },
+                    { label: "This Saturday morning", correct: false },
+                    { label: "This Sunday afternoon", correct: false },
+                    { label: "Last Sunday morning", correct: false }
+                ],
+                explain: "Trong bài đọc Minh nói: <em>'our Green School Club will have some community activities on that morning'</em> (sáng Chủ Nhật này)."
+            },
+            {
+                id: 2,
+                icon: "🪴",
+                question: "What activities does Minh's club do?",
+                options: [
+                    { label: "Pick up litter and plant vegetables in the school garden", correct: true },
+                    { label: "Donate books and teach English", correct: false },
+                    { label: "Buy board games for homeless children", correct: false },
+                    { label: "Clean up the nursing home", correct: false }
+                ],
+                explain: "Minh chia sẻ: <em>'we pick up litter around our school and plant vegetables in our school garden.'</em>"
+            },
+            {
+                id: 3,
+                icon: "👵",
+                question: "Where does Minh's club donate the vegetables?",
+                options: [
+                    { label: "To a nursing home", correct: true },
+                    { label: "To homeless children", correct: false },
+                    { label: "To 30 kids in the area", correct: false },
+                    { label: "To their teachers", correct: false }
+                ],
+                explain: "Minh trả lời: <em>'We donate the vegetables to a nursing home.'</em> (Viện dưỡng lão)."
+            },
+            {
+                id: 4,
+                icon: "📚",
+                question: "What does Tom's school do for homeless children?",
+                options: [
+                    { label: "Donate books", correct: true },
+                    { label: "Donate vegetables", correct: false },
+                    { label: "Plant vegetables", correct: false },
+                    { label: "Buy board games", correct: false }
+                ],
+                explain: "Tom trả lời: <em>'We donate books to homeless children.'</em>"
+            },
+            {
+                id: 5,
+                icon: "⏰",
+                question: "When will Minh and Tom meet up?",
+                options: [
+                    { label: "In the afternoon", correct: true },
+                    { label: "In the morning", correct: false },
+                    { label: "On Saturday", correct: false },
+                    { label: "Next week", correct: false }
+                ],
+                explain: "Vì sáng Chủ Nhật Minh bận tham gia câu lạc bộ, Minh chốt lại: <em>'So, let's meet in the afternoon then.'</em>"
+            }
+        ];
+
+        const tfData = [
+            {
+                id: 1,
+                icon: "🎲",
+                statement: "Tom bought Minh a board game.",
+                isTrue: true,
+                explain: "Đúng! Tom nói: <em>'I bought you a board game.'</em>"
+            },
+            {
+                id: 2,
+                icon: "🏫",
+                statement: "Minh's club plants vegetables in the public park.",
+                isTrue: false,
+                explain: "Sai! Minh trồng rau trong vườn trường: <em>'plant vegetables in our school garden'</em>."
+            },
+            {
+                id: 3,
+                icon: "🥦",
+                statement: "Minh's club sells vegetables to get money.",
+                isTrue: false,
+                explain: "Sai! Câu lạc bộ quyên góp rau cho viện dưỡng lão chứ không bán: <em>'We donate the vegetables to a nursing home.'</em>"
+            },
+            {
+                id: 4,
+                icon: "👩‍🏫",
+                statement: "Tom's school taught English to 30 kids last summer.",
+                isTrue: true,
+                explain: "Đúng! Tom nói: <em>'Last summer, we taught English to 30 kids in the area.'</em>"
+            },
+            {
+                id: 5,
+                icon: "🌅",
+                statement: "Minh and Tom will meet up on Sunday morning.",
+                isTrue: false,
+                explain: "Sai! Sáng Chủ Nhật Minh bận hoạt động cộng đồng, họ sẽ gặp nhau vào buổi chiều (in the afternoon)."
+            }
+        ];
+
+        /* ================= GAME STATE ================= */
+        let totalScore = 0;
+
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        let currentTFIndex = 0;
+        let tfScore = 0;
+        let tfAnswered = false;
+
+        /* ================= AUDIO SYNTHESIS & SOUND EFFECTS ================= */
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            try {
+                initAudio();
+                if (!audioCtx) return;
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                const now = audioCtx.currentTime;
+
+                if (type === 'correct') {
+                    // Triumphant Victory Fanfare
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(523.25, now); // C5
+                    osc.frequency.setValueAtTime(659.25, now + 0.12); // E5
+                    osc.frequency.setValueAtTime(783.99, now + 0.24); // G5
+                    osc.frequency.setValueAtTime(1046.50, now + 0.36); // C6
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+                    osc.start(now);
+                    osc.stop(now + 0.7);
+                } else if (type === 'incorrect') {
+                    // Encouraging gentle melodic tone
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(329.63, now); // E4
+                    osc.frequency.setValueAtTime(293.66, now + 0.2); // D4
+                    osc.frequency.setValueAtTime(349.23, now + 0.4); // F4
+                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+                    osc.start(now);
+                    osc.stop(now + 0.6);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(440, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                }
+            } catch (e) {
+                console.log("Audio play error", e);
+            }
+        }
+
+        function speakText(text) {
+            playSound('click');
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.88;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        /* ================= CANVAS FIREWORKS EFFECT ================= */
+        const canvas = document.getElementById('fireworks-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createFirework(x, y) {
+            const colors = ['#22c55e', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#8b5cf6'];
+            const particleCount = 60;
+            for (let i = 0; i < particleCount; i++) {
+                const angle = (Math.PI * 2 / particleCount) * i;
+                const speed = Math.random() * 6 + 2;
+                particles.push({
+                    x: x,
+                    y: y,
+                    vx: Math.cos(angle) * speed,
+                    vy: Math.sin(angle) * speed,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    radius: Math.random() * 3 + 2,
+                    alpha: 1,
+                    decay: Math.random() * 0.02 + 0.015
+                });
+            }
+        }
+
+        function animateFireworks() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = particles.length - 1; i >= 0; i--) {
+                const p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.05;
+                p.alpha -= p.decay;
+
+                if (p.alpha <= 0) {
+                    particles.splice(i, 1);
+                } else {
+                    ctx.save();
+                    ctx.globalAlpha = p.alpha;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+            requestAnimationFrame(animateFireworks);
+        }
+        animateFireworks();
+
+        function triggerVictoryFireworks() {
+            createFirework(canvas.width * 0.3, canvas.height * 0.4);
+            setTimeout(() => createFirework(canvas.width * 0.7, canvas.height * 0.3), 150);
+            setTimeout(() => createFirework(canvas.width * 0.5, canvas.height * 0.5), 300);
+        }
+
+        /* ================= SNOW ANIMATION ================= */
+        function initSnow() {
+            const container = document.getElementById('snow-container');
+            const totalSnowflakes = 25;
+            for (let i = 0; i < totalSnowflakes; i++) {
+                const flake = document.createElement('div');
+                flake.className = 'snowflake';
+                const size = Math.random() * 6 + 4 + 'px';
+                flake.style.width = size;
+                flake.style.height = size;
+                flake.style.left = Math.random() * 100 + 'vw';
+                flake.style.opacity = Math.random() * 0.7 + 0.3;
+                flake.style.animationDuration = Math.random() * 6 + 5 + 's';
+                flake.style.animationDelay = Math.random() * 5 + 's';
+                container.appendChild(flake);
+            }
+        }
+
+        /* ================= MODE SWITCHING ================= */
+        function switchMode(mode) {
+            initAudio();
+            const dialogueView = document.getElementById('dialogue-view');
+            const quizView = document.getElementById('quiz-game-view');
+            const tfView = document.getElementById('tf-game-view');
+
+            const tabDialogue = document.getElementById('tab-dialogue');
+            const tabQuiz = document.getElementById('tab-quiz');
+            const tabTf = document.getElementById('tab-tf');
+            const modeBadge = document.getElementById('mode-badge');
+
+            const activeClass = "px-4 py-2.5 rounded-2xl font-bold text-sm sm:text-base shadow-md transition transform active:scale-95 cursor-pointer bg-emerald-600 text-white border-2 border-emerald-500";
+            const inactiveClass = "px-4 py-2.5 rounded-2xl font-bold text-sm sm:text-base shadow-md transition transform active:scale-95 cursor-pointer bg-white text-emerald-800 border-2 border-emerald-200 hover:bg-emerald-50";
+
+            dialogueView.classList.add('hidden');
+            quizView.classList.add('hidden');
+            tfView.classList.add('hidden');
+
+            tabDialogue.className = inactiveClass;
+            tabQuiz.className = inactiveClass;
+            tabTf.className = inactiveClass;
+
+            if (mode === 'dialogue') {
+                dialogueView.classList.remove('hidden');
+                tabDialogue.className = activeClass;
+                modeBadge.innerText = "Chế độ: Đọc & Nghe thoại";
+            } else if (mode === 'quiz') {
+                quizView.classList.remove('hidden');
+                tabQuiz.className = activeClass;
+                modeBadge.innerText = "Chế độ 1: Trắc nghiệm";
+                if (currentQuizIndex === 0 && !quizAnswered) loadQuizQuestion();
+            } else if (mode === 'tf') {
+                tfView.classList.remove('hidden');
+                tabTf.className = activeClass;
+                modeBadge.innerText = "Chế độ 2: Đúng / Sai";
+                if (currentTFIndex === 0 && !tfAnswered) loadTFQuestion();
+            }
+        }
+
+        /* ================= QUIZ LOGIC ================= */
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            const q = quizData[currentQuizIndex];
+
+            document.getElementById('quiz-q-num').innerText = currentQuizIndex + 1;
+            document.getElementById('quiz-icon').innerText = q.icon;
+            document.getElementById('quiz-question-text').innerText = q.question;
+
+            const percent = Math.round(((currentQuizIndex + 1) / quizData.length) * 100);
+            document.getElementById('quiz-progress-bar').style.width = `${percent}%`;
+
+            const optionsBox = document.getElementById('quiz-options');
+            optionsBox.innerHTML = '';
+
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-100 hover:border-emerald-400 bg-white hover:bg-emerald-50/50 font-bold text-gray-800 transition flex items-center justify-between cursor-pointer shadow-sm";
+                btn.innerHTML = `<span><strong class="text-emerald-700 mr-2">${String.fromCharCode(65 + idx)}.</strong> ${opt.label}</span>`;
+                btn.onclick = () => selectQuizOption(opt, btn);
+                optionsBox.appendChild(btn);
+            });
+
+            document.getElementById('quiz-feedback-box').classList.add('hidden');
+            document.getElementById('quiz-next-btn').classList.add('hidden');
+        }
+
+        function selectQuizOption(opt, btnEl) {
+            if (quizAnswered) return;
+            quizAnswered = true;
+
+            const q = quizData[currentQuizIndex];
+            const feedbackBox = document.getElementById('quiz-feedback-box');
+
+            if (opt.correct) {
+                btnEl.className = "w-full text-left p-4 rounded-2xl border-2 border-emerald-500 bg-emerald-100 text-emerald-950 font-black flex items-center justify-between shadow";
+                quizScore++;
+                totalScore += 20;
+                playSound('correct');
+                triggerVictoryFireworks();
+
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-sm font-semibold border bg-emerald-50 border-emerald-300 text-emerald-900 block";
+                feedbackBox.innerHTML = `🎉 <strong>Chính xác!</strong> ${q.explain}`;
+            } else {
+                btnEl.className = "w-full text-left p-4 rounded-2xl border-2 border-amber-400 bg-amber-50 text-amber-950 font-black flex items-center justify-between";
+                playSound('incorrect');
+
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-sm font-semibold border bg-amber-50 border-amber-300 text-amber-900 block";
+                feedbackBox.innerHTML = `💪 <strong>Chưa chính xác!</strong> Hãy xem lại đoạn thoại nhé. <br>👉 <strong>Giải thích:</strong> ${q.explain}`;
+            }
+
+            updateScoreDisplay();
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            if (currentQuizIndex < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                showQuizResult();
+            }
+        }
+
+        function showQuizResult() {
+            document.getElementById('quiz-card-content').classList.add('hidden');
+            document.getElementById('quiz-result-view').classList.remove('hidden');
+            document.getElementById('quiz-final-score').innerText = quizScore;
+            triggerVictoryFireworks();
+            playSound('correct');
+        }
+
+        function restartQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            document.getElementById('quiz-result-view').classList.add('hidden');
+            document.getElementById('quiz-card-content').classList.remove('hidden');
+            loadQuizQuestion();
+        }
+
+        /* ================= TRUE / FALSE LOGIC ================= */
+        function loadTFQuestion() {
+            tfAnswered = false;
+            const item = tfData[currentTFIndex];
+
+            document.getElementById('tf-q-num').innerText = currentTFIndex + 1;
+            document.getElementById('tf-icon').innerText = item.icon;
+            document.getElementById('tf-statement-text').innerHTML = `"${item.statement}"`;
+
+            const percent = Math.round(((currentTFIndex + 1) / tfData.length) * 100);
+            document.getElementById('tf-progress-bar').style.width = `${percent}%`;
+
+            document.getElementById('tf-feedback-box').classList.add('hidden');
+            document.getElementById('tf-next-btn').classList.add('hidden');
+        }
+
+        function selectTF(userChoice, btnEl) {
+            if (tfAnswered) return;
+            tfAnswered = true;
+
+            const item = tfData[currentTFIndex];
+            const feedbackBox = document.getElementById('tf-feedback-box');
+
+            if (userChoice === item.isTrue) {
+                tfScore++;
+                totalScore += 20;
+                playSound('correct');
+                triggerVictoryFireworks();
+
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-sm font-semibold border bg-emerald-50 border-emerald-300 text-emerald-900 block";
+                feedbackBox.innerHTML = `🎉 <strong>Đúng rồi!</strong> ${item.explain}`;
+            } else {
+                playSound('incorrect');
+
+                feedbackBox.className = "p-4 rounded-2xl mb-6 text-sm font-semibold border bg-amber-50 border-amber-300 text-amber-900 block";
+                feedbackBox.innerHTML = `💪 <strong>Chưa đúng rồi!</strong> <br>👉 <strong>Giải thích:</strong> ${item.explain}`;
+            }
+
+            updateScoreDisplay();
+            feedbackBox.classList.remove('hidden');
+            document.getElementById('tf-next-btn').classList.remove('hidden');
+        }
+
+        function nextTFQuestion() {
+            currentTFIndex++;
+            if (currentTFIndex < tfData.length) {
+                loadTFQuestion();
+            } else {
+                showTFResult();
+            }
+        }
+
+        function showTFResult() {
+            document.getElementById('tf-card-content').classList.add('hidden');
+            document.getElementById('tf-result-view').classList.remove('hidden');
+            document.getElementById('tf-final-score').innerText = tfScore;
+            triggerVictoryFireworks();
+            playSound('correct');
+        }
+
+        function restartTF() {
+            currentTFIndex = 0;
+            tfScore = 0;
+            document.getElementById('tf-result-view').classList.add('hidden');
+            document.getElementById('tf-card-content').classList.remove('hidden');
+            loadTFQuestion();
+        }
+
+        function updateScoreDisplay() {
+            document.getElementById('score-display').innerText = totalScore;
+        }
+
+        /* ================= INITIALIZATION ================= */
+        window.onload = function() {
+            initSnow();
+        };
+    </script>
+</body>
+</html>
